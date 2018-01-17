@@ -1,0 +1,43 @@
+app.controller("userController", function($scope, $http, $location,$rootScope,$cookieStore) 
+	{
+	$scope.user={username1:'',password:'',role:'',firstname:'',lastname:'',email:'',phone:'',isOnline:''};
+	$scope.allusers;
+	$scope.register=function()
+	{
+		console.log("enter register");
+		$http.post("http://localhost:8090/restController/register",$scope.user)
+		.then(function(response)
+				{
+					console.log("successfully registered");
+					$location.path("/login");
+				});
+	}
+	$scope.loginuser=function()
+	{
+		console.log("login function");
+		
+		$http.post("http://localhost:8090/restController/login",$scope.user)
+		.then(function(response){
+			$scope.user=response.data;
+			$rootScope.currentUser=response.data;
+			$cookieStore.put('user',response.data);
+			console.log($rootScope.currentUser.role);
+			$location.path("/home")
+		});
+	}
+	$scope.logoutuser=function(){
+		console.log("Logout user")
+		return $http.get("http://localhost:8090/restController/logout",$scope.user)
+		$location.path("/home")
+	};
+	function fetchAllUsers()
+	{
+		console.log("fetching all users");
+		$http.get("http://localhost:8090/restController/getAllUsers")
+		.then(function(response)
+				{
+					$scope.allusers=response.data;
+				});
+				};
+				fetchAllUsers();
+	});

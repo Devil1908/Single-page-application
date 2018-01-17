@@ -1,0 +1,145 @@
+package com.niit.Config;
+import java.util.Properties;
+
+import javax.sql.DataSource;
+
+import org.hibernate.SessionFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.collaboration.dao.BlogCommentsDAO;
+import com.collaboration.dao.BlogCommentsDAOImpl;
+import com.collaboration.dao.BlogDAO;
+import com.collaboration.dao.BlogDAOImpl;
+import com.collaboration.dao.ForumCommentsDAO;
+import com.collaboration.dao.ForumCommentsDAOImpl;
+import com.collaboration.dao.ForumDAO;
+import com.collaboration.dao.ForumDAOImpl;
+import com.collaboration.dao.FriendDAO;
+import com.collaboration.dao.FriendDAOImpl;
+import com.collaboration.dao.JobsDAO;
+import com.collaboration.dao.JobsDAOImpl;
+import com.collaboration.dao.ProfilePictureDAO;
+import com.collaboration.dao.ProfilePictureDAOImpl;
+import com.collaboration.dao.UserDetailsDAO;
+import com.collaboration.dao.UserDetailsDAOImpl;
+import com.collaboration.model.Blog;
+import com.collaboration.model.BlogComments;
+import com.collaboration.model.Forum;
+import com.collaboration.model.ForumComments;
+import com.collaboration.model.Friend;
+import com.collaboration.model.Jobs;
+import com.collaboration.model.UserDetails;
+
+@Configuration
+@EnableTransactionManagement
+@ComponentScan("com.niit")
+public class DBConfig {
+
+
+     
+	public DataSource getOracleDataSource()
+	{
+		DriverManagerDataSource ds = new DriverManagerDataSource();
+		ds.setDriverClassName("org.h2.Driver");
+		ds.setUrl("jdbc:h2:tcp://localhost/~/archis");
+		ds.setUsername("sa");
+		ds.setPassword("");
+		return ds;
+		
+	}
+	
+	public Properties getHibernateProperties()
+	{
+		Properties prop = new Properties();
+		prop.put("hibernate.show_sql", "true");
+		prop.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+		prop.put("hibernate.format_sql", "true");
+		prop.put("hibernate.hbm2ddl.auto", "update");
+		return prop;
+		
+	}
+	@Bean
+	public SessionFactory getSessionFactory()
+	{
+		LocalSessionFactoryBuilder localSessionFactoryBuilder=new LocalSessionFactoryBuilder(getOracleDataSource());
+		localSessionFactoryBuilder.addProperties(getHibernateProperties());
+		localSessionFactoryBuilder.addAnnotatedClass(Blog.class);
+		System.out.println("SessionFactory Bean for blog Created");
+		localSessionFactoryBuilder.addAnnotatedClass(Forum.class);
+		System.out.println("SessionFactory Bean for forum Created");
+		localSessionFactoryBuilder.addAnnotatedClass(UserDetails.class);
+		System.out.println("SessionFactory Bean for user Created");
+		localSessionFactoryBuilder.addAnnotatedClass(Jobs.class);
+		System.out.println("SessionFactory Bean for job Created");
+		localSessionFactoryBuilder.addAnnotatedClass(Friend.class);
+		System.out.println("SessionFactory Bean for Friend Created");
+		localSessionFactoryBuilder.addAnnotatedClass(BlogComments.class);
+		System.out.println("SessionFactory Bean for BlogComments Created");
+		localSessionFactoryBuilder.addAnnotatedClass(ForumComments.class);
+		System.out.println("SessionFactory Bean for ForumComments Created");
+		return localSessionFactoryBuilder.buildSessionFactory();
+		
+	}
+	@Bean
+	public HibernateTransactionManager getHibernateTransactionManager(SessionFactory sessionFactory)
+   {
+	
+		return new HibernateTransactionManager(sessionFactory) ;
+		
+   }
+   
+	
+	@Bean
+	public BlogDAO getBlogDAO(SessionFactory sessionFactory)
+	{
+		System.out.println("Blog DAO object created");
+		return new BlogDAOImpl(sessionFactory);
+	}
+	@Bean
+	public ForumDAO getForumDAO(SessionFactory sessionFactory)
+	{
+		System.out.println("forum DAO object created");
+		return new ForumDAOImpl(sessionFactory);
+	}
+   @Bean
+   public UserDetailsDAO getUserDAO(SessionFactory sessionFactory)
+   {
+	   System.out.println("User DAO object created");
+	   return new UserDetailsDAOImpl(sessionFactory);
+   }
+	@Bean
+	public JobsDAO getJobDAO(SessionFactory sessionFactory)
+	{
+		System.out.println("Job DAO object created");
+		return new JobsDAOImpl(sessionFactory);
+	}
+	@Bean
+	public FriendDAO getFriendDAO(SessionFactory sessionFactory)
+	{
+		System.out.println("Friend DAO object created");
+		return new FriendDAOImpl(sessionFactory);
+	}
+	@Bean
+	public BlogCommentsDAO getBlogCommentsDAO(SessionFactory sessionFactory)
+	{
+		System.out.println("BlogComments DAO object created");
+		return new BlogCommentsDAOImpl(sessionFactory);
+	}
+	@Bean
+	public ForumCommentsDAO getForumCommentsDAO(SessionFactory sessionFactory)
+	{
+		System.out.println("ForumComments DAO object created");
+		return new ForumCommentsDAOImpl(sessionFactory);
+	}
+	@Bean
+	public ProfilePictureDAO getProfilePictureDAO(SessionFactory sessionFactory) {
+		System.out.println("ProfilePicture DAO object Created");
+		return new ProfilePictureDAOImpl(sessionFactory);
+	}
+}
